@@ -24,7 +24,7 @@ public class OrderProvider implements BaseProvider<Order> {
 
     @Override
     public Optional<Order> findTop() {
-        if (uniquePriorityBlockingQueue.isEmpty()) {
+        if (!uniquePriorityBlockingQueue.isEmpty()) {
             try {
                 return Optional.of(uniquePriorityBlockingQueue.take());
             } catch (InterruptedException e) {
