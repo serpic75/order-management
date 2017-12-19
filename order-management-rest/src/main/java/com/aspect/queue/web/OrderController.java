@@ -77,9 +77,9 @@ public class OrderController {
     @RequestMapping(value = "/{orderId}/{timeStamp}",method = RequestMethod.POST, produces = { "application/json", "application/xml" }, consumes = {
             "application/json", "application/xml" })
     public ResponseEntity<OrderRepresentation> createOrder(
-            @ApiParam(value = "The identifier to create an Order") @PathVariable(
-                    "orderId") String orderIdParam,
-            @ApiParam(value = "The timeStamp to create an Order") @PathVariable(
+            @ApiParam(value = "The identifier to create an Order", required = true) @PathVariable(
+                    value = "orderId") String orderIdParam,
+            @ApiParam(value = "The timeStamp to create an Order", required = true) @PathVariable(
                     "timeStamp") String timeStamp) {
         OrderRepresentation representation = new OrderRepresentationBuilder(new Long(orderIdParam))
                 .withTimestamp(new Long(timeStamp)).createRepresentation();

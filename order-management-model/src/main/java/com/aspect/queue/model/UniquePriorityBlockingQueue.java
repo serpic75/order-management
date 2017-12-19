@@ -1,6 +1,7 @@
 package com.aspect.queue.model;
 
 import com.aspect.queue.model.exceptions.DuplicatedOrderException;
+import org.springframework.http.HttpStatus;
 
 import java.util.Comparator;
 import java.util.HashSet;

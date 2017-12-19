@@ -24,7 +24,7 @@ public class GlobalControllerExceptionHandler {
     @ResponseBody
     ResponseEntity<OrderRestError> handleException(HttpServletRequest request, OrderException e) {
 
-        OrderRestError restError = sanitizeRestError(new OrderRestError(e.getStatusCode(), e.getErrorText(),
+        OrderRestError restError = sanitizeRestError(new OrderRestError(e.getStatusCode(), e.getMessage(),
                 request.getRequestURL().toString()), request);
 
         return new ResponseEntity<>(restError, HttpStatus.valueOf(e.getStatusCode()));

@@ -3,8 +3,8 @@ package com.aspect.queue.model.provider;
 import com.aspect.queue.model.ClassifiedIdentifier;
 import com.aspect.queue.model.Order;
 import com.aspect.queue.model.UniquePriorityBlockingQueue;
-import com.aspect.queue.model.exceptions.DuplicatedOrderException;
 import com.aspect.queue.model.exceptions.OrderException;
+import com.aspect.queue.model.exceptions.OrderInvalidValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class OrderProvider implements BaseProvider<Order> {
             try {
                 return Optional.of(uniquePriorityBlockingQueue.take());
             } catch (InterruptedException e) {
-                logger.warn("Interrupted!",e);
+                logger.warn("Interrupted!", e);
                 Thread.currentThread().interrupt();
             }
         }
@@ -37,7 +37,7 @@ public class OrderProvider implements BaseProvider<Order> {
 
     @Override
     public Integer findPosition(Order order) {
-        if(uniquePriorityBlockingQueue.isEmpty()){
+        if (uniquePriorityBlockingQueue.isEmpty()) {
             return -1;
         }
 
@@ -56,8 +56,10 @@ public class OrderProvider implements BaseProvider<Order> {
 
     @Override
     public Order find(Order key) {
-        uniquePriorityBlockingQueue.remove(key);
-        return key;
+        if (uniquePriorityBlockingQueue.remove(key)) {
+            return key;
+        }
+        throw new OrderInvalidValueException("Order not found");
     }
 
     @Override
@@ -66,11 +68,11 @@ public class OrderProvider implements BaseProvider<Order> {
     }
 
     @Override
-    public boolean delete(Long id){
-        if(uniquePriorityBlockingQueue.isEmpty()){
+    public boolean delete(Long id) {
+        if (uniquePriorityBlockingQueue.isEmpty()) {
             Order order = new Order(new ClassifiedIdentifier(id));
 
-            if(uniquePriorityBlockingQueue.contains(order)){
+            if (uniquePriorityBlockingQueue.contains(order)) {
                 return uniquePriorityBlockingQueue.remove(new Order(new ClassifiedIdentifier(id)));
             } else {
                 throw new OrderException("No item found");
@@ -81,12 +83,7 @@ public class OrderProvider implements BaseProvider<Order> {
 
     @Override
     public Order create(Order order) {
-        order.setTimestamp(System.currentTimeMillis());
-        try {
-            uniquePriorityBlockingQueue.insert(order);
-        } catch (DuplicatedOrderException e) {
-            throw new DuplicatedOrderException(e.getMessage());
-        }
+        uniquePriorityBlockingQueue.insert(order);
         return order;
     }
 }
