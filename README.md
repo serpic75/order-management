@@ -6,7 +6,8 @@ to compile and produce all the artifacts:
 mvn clean install
 
 to lunch the application:
-from  order-management-rest directory: (i.e. cd order-management-rest
+from  order-management-rest directory: (i.e. cd order-management-rest)
+
 mvn spring-boot:run
 
 
