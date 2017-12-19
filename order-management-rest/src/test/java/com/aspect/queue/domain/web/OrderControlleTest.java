@@ -140,7 +140,7 @@ public class OrderControlleTest extends BaseLinkDecoratorTestConfig {
         when(mockHttpServletRequest.getRequestURL()).thenReturn(requestURLBuffer);
         when(mockHttpServletRequest.getRequestURI()).thenReturn(requestURL.toURI().toString());
 
-        ResponseEntity<?> response = target.createOrder(mockRepresentation, mockHttpServletRequest);
+        ResponseEntity<?> response = target.createOrder(mockId, mockTimeStamp);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -171,7 +171,7 @@ public class OrderControlleTest extends BaseLinkDecoratorTestConfig {
     }
 
     private void mockTransformerInitialized() {
-        when(mockTransformer.extract(mockRepresentation)).thenReturn(mockFromTransformer);
+        when(mockTransformer.extract(anyObject())).thenReturn(mockFromTransformer);
         when(mockTransformer.transform(mockFromProvider)).thenReturn(mockRepresentationFromTransformer);
     }
 
