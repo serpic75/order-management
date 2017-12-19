@@ -1,12 +1,12 @@
-to compile the project:
+# Order Manager
+priority queue web service that accepts work orders and provides a prioritized list to work
+
+# Getting Started
+to compile and produce all the artifacts:
 mvn clean install
 
-to compile and prooduce all the artifacts:
-from the order-management directory:
-mvn clean install
-
-to lunc the application:
-from  order-management-rest directory:
+to lunch the application:
+from  order-management-rest directory: (i.e. cd order-management-rest
 mvn spring-boot:run
 
 

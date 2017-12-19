@@ -7,6 +7,7 @@ import com.aspect.queue.model.OrderRestError;
 import com.aspect.queue.model.exceptions.OrderException;
 import com.aspect.queue.model.provider.BaseProvider;
 import com.aspect.queue.model.transformers.OrderRepresentation;
+import com.aspect.queue.model.transformers.OrderRepresentationBuilder;
 import com.aspect.queue.model.transformers.OrderTransformer;
 import com.aspect.queue.model.transformers.Transformer;
 import com.aspect.queue.web.validator.Validator;
@@ -22,12 +23,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,10 +60,10 @@ public class OrderController {
     }
 
     /**
-     * @param representation
-     * @param request
+     *
+     * @param orderIdParam
+     * @param timeStamp
      * @return
-     * @throws OrderException
      */
 
     @ApiOperation(value = "Create a new Order", notes = "Use this operation to define a new queue. ")
@@ -75,11 +74,15 @@ public class OrderController {
             @ApiResponse(code = 403, message = "The Attempt is forbidden.", response = OrderRepresentation.class),
             @ApiResponse(code = 404, message = "The resource doesn't exists.", response = OrderRepresentation.class),
             @ApiResponse(code = 409, message = "The queue is already in use.", response = OrderRestError.class) })
-    @RequestMapping(method = RequestMethod.POST, produces = { "application/json", "application/xml" }, consumes = {
+    @RequestMapping(value = "/{orderId}/{timeStamp}",method = RequestMethod.POST, produces = { "application/json", "application/xml" }, consumes = {
             "application/json", "application/xml" })
     public ResponseEntity<OrderRepresentation> createOrder(
-            @ApiParam(value = "The Order representation",
-                    required = true) @RequestBody OrderRepresentation representation, HttpServletRequest request) {
+            @ApiParam(value = "The identifier to create an Order") @PathVariable(
+                    "orderId") String orderIdParam,
+            @ApiParam(value = "The timeStamp to create an Order") @PathVariable(
+                    "timeStamp") String timeStamp) {
+        OrderRepresentation representation = new OrderRepresentationBuilder(new Long(orderIdParam))
+                .withTimestamp(new Long(timeStamp)).createRepresentation();
         return createOrUpdate(true, representation, transformer, decorator, provider);
     }
 
@@ -198,9 +201,8 @@ public class OrderController {
     }
 
     private List<OrderRepresentation> createRepresentationList(List<Order> orders) {
-
-        return orders.stream().map(o -> transformer.transform(o)).map(r -> decorator.decorate(r))
-                .collect(Collectors.toList());
+        return orders.stream().map(o ->transformer.transform(o)).collect(Collectors.toList()).stream().map(r -> decorator.decorate(r)).collect(
+                Collectors.toList());
     }
 
     private List<Order> findAll(BaseProvider<Order> provider) {

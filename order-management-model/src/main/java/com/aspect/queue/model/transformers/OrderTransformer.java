@@ -24,7 +24,7 @@ public class OrderTransformer implements Transformer<Order, OrderRepresentation>
     @Override
     public Order extract(OrderRepresentation representation) {
 
-        return new OrderRepresentationBuilder(representation.getRepresentationId()).create();
+        return new OrderRepresentationBuilder(representation.getRepresentationId()).withTimestamp(representation.getOrderInsertDate()).create();
     }
 }
 
