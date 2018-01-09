@@ -40,12 +40,13 @@ public class OrderProvider implements BaseProvider<Order> {
         if (uniquePriorityBlockingQueue.isEmpty()) {
             return -1;
         }
-
+        uniquePriorityBlockingQueue.sortQueue();
         return uniquePriorityBlockingQueue.getIndexOf(order);
     }
 
     @Override
     public Double averageWaitingTime() {
+        uniquePriorityBlockingQueue.sortQueue();
         return uniquePriorityBlockingQueue.stream().mapToDouble(Order::getWaitingTime).average().getAsDouble();
     }
 
@@ -64,6 +65,7 @@ public class OrderProvider implements BaseProvider<Order> {
 
     @Override
     public List<Order> findAll() {
+        uniquePriorityBlockingQueue.sortQueue();
         return uniquePriorityBlockingQueue.stream().collect(Collectors.toList());
     }
 

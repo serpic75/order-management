@@ -46,21 +46,17 @@ public class OrderController {
 
     @Autowired
     public OrderController(
-
             @Qualifier("orderLinkDecorator") LinkDecorator<OrderRepresentation> decorator,
             @Qualifier("orderRepresentationValidator") Validator<OrderRepresentation> validator,
             @Qualifier("orderProvider") BaseProvider<Order> provider,
             OrderTransformer transformer) {
-
         this.decorator = decorator;
         this.validator = validator;
         this.transformer = transformer;
         this.provider = provider;
-
     }
 
     /**
-     *
      * @param orderIdParam
      * @param timeStamp
      * @return
@@ -71,11 +67,11 @@ public class OrderController {
             @ApiResponse(code = 201, message = "The queue is included in the response.",
                     response = OrderRepresentation.class),
             @ApiResponse(code = 401, message = "The Attempt is Unauthorized.", response = OrderRepresentation.class),
-            @ApiResponse(code = 403, message = "The Attempt is forbidden.", response = OrderRepresentation.class),
-            @ApiResponse(code = 404, message = "The resource doesn't exists.", response = OrderRepresentation.class),
+            @ApiResponse(code = 400, message = "The request validation failed.", response = OrderRestError.class),
+            @ApiResponse(code = 403, message = "The Attempt is forbidden.", response = OrderRestError.class),
             @ApiResponse(code = 409, message = "The queue is already in use.", response = OrderRestError.class) })
-    @RequestMapping(value = "/{orderId}/{timeStamp}",method = RequestMethod.POST, produces = { "application/json", "application/xml" }, consumes = {
-            "application/json", "application/xml" })
+    @RequestMapping(value = "/add/{orderId}/{timeStamp}", method = RequestMethod.POST, produces = { "application/json",
+            "application/xml" }, consumes = { "application/json", "application/xml" })
     public ResponseEntity<OrderRepresentation> createOrder(
             @ApiParam(value = "The identifier to create an Order", required = true) @PathVariable(
                     value = "orderId") String orderIdParam,
@@ -109,6 +105,7 @@ public class OrderController {
     /**
      * @param orderIdParam
      * @return
+     * @throws OrderException
      */
     @ApiOperation(value = "Get An Order by ID and delete it", notes = "Retrieve an Order by its ID. ")
     @ApiResponses({
@@ -122,19 +119,14 @@ public class OrderController {
     public ResponseEntity<OrderRepresentation> lookupOrder(
             @ApiParam(value = "The identifier of the existing Order") @PathVariable(
                     "orderId") String orderIdParam) {
-
         Order key = new Order(new ClassifiedIdentifier(getid(orderIdParam)));
         Order foundOrder = find(provider, key);
-
         OrderRepresentation orderRepresentation = transformer.transform(foundOrder);
         orderRepresentation = decorator.decorate(orderRepresentation);
-
         return new ResponseEntity<>(orderRepresentation, HttpStatus.OK);
     }
 
     /**
-     * @return
-     * @throws OrderException
      */
     @ApiOperation(value = "List all Orders", notes = "This operation lists all orders.")
     @ApiResponses({
@@ -201,8 +193,9 @@ public class OrderController {
     }
 
     private List<OrderRepresentation> createRepresentationList(List<Order> orders) {
-        return orders.stream().map(o ->transformer.transform(o)).collect(Collectors.toList()).stream().map(r -> decorator.decorate(r)).collect(
-                Collectors.toList());
+        return orders.stream().map(o -> transformer.transform(o)).collect(Collectors.toList()).stream()
+                .map(r -> decorator.decorate(r)).collect(
+                        Collectors.toList());
     }
 
     private List<Order> findAll(BaseProvider<Order> provider) {

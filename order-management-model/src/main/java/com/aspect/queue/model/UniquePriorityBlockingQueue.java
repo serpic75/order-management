@@ -69,7 +69,7 @@ public class UniquePriorityBlockingQueue extends PriorityBlockingQueue<Order> {
         return false;
     }
 
-    private void sortQueue() {
+    public void sortQueue() {
         setPriorities();
         if(!this.isEmpty()){
             resetPriority();
