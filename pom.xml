@@ -17,7 +17,7 @@
     <properties>
         <swagger.version>1.5.16</swagger.version>
         <mockito.version>1.10.19</mockito.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <maven.cobertura.version>2.7</maven.cobertura.version>
         <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
         <asciidoctorj.version>1.5.4</asciidoctorj.version>
