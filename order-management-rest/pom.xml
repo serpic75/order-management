@@ -9,7 +9,7 @@
 
     <properties>
         <springfox-swagger.version>2.7.0</springfox-swagger.version>
-        <springframework.version>1.5.9.RELEASE</springframework.version>
+        <springframework.version>2.5.12</springframework.version>
     </properties>
 
     <artifactId>order-management-rest</artifactId>
