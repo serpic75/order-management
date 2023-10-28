@@ -1,7 +1,8 @@
 package com.aspect.queue.web.validator;
 
 import com.aspect.queue.model.exceptions.OrderInvalidValueException;
-import com.google.common.base.Strings;
+
+import java.util.Objects;
 
 /**
  * Simple Utility Class providing static methods for input checking and throwing proper {@code OrderInvalidValueException}
@@ -21,7 +22,7 @@ public class ValidatorCommon {
 
     public static void checkNotNullAndNotEmpty(String obj, String valueType,
             String valueInstance) {
-        if (Strings.isNullOrEmpty(obj)) {
+        if (!Objects.requireNonNull(obj).isEmpty()) {
             throw new OrderInvalidValueException(valueType, valueInstance);
         }
     }

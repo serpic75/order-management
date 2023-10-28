@@ -18,14 +18,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.http.HttpHeaders;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,15 +66,14 @@ public class OrderController {
             @ApiResponse(code = 400, message = "The request validation failed.", response = OrderRestError.class),
             @ApiResponse(code = 403, message = "The Attempt is forbidden.", response = OrderRestError.class),
             @ApiResponse(code = 409, message = "The queue is already in use.", response = OrderRestError.class) })
-    @RequestMapping(value = "/add/{orderId}/{timeStamp}", method = RequestMethod.POST, produces = { "application/json",
-            "application/xml" }, consumes = { "application/json", "application/xml" })
+    @PostMapping(value = "/add/{orderId}/{timeStamp}", produces = { "application/json" })
     public ResponseEntity<OrderRepresentation> createOrder(
             @ApiParam(value = "The identifier to create an Order", required = true) @PathVariable(
                     value = "orderId") String orderIdParam,
             @ApiParam(value = "The timeStamp to create an Order", required = true) @PathVariable(
                     "timeStamp") String timeStamp) {
-        OrderRepresentation representation = new OrderRepresentationBuilder(new Long(orderIdParam))
-                .withTimestamp(new Long(timeStamp)).createRepresentation();
+        OrderRepresentation representation = new OrderRepresentationBuilder(Long.valueOf(orderIdParam))
+                .withTimestamp(Long.valueOf(timeStamp)).createRepresentation();
         return createOrUpdate(true, representation, transformer, decorator, provider);
     }
 
@@ -93,9 +88,8 @@ public class OrderController {
             @ApiResponse(code = 401, message = "The authentication failed.", response = OrderRestError.class),
             @ApiResponse(code = 403, message = "The request could not be authorized.", response = OrderRestError.class),
             @ApiResponse(code = 404, message = "The Order could not be found.", response = OrderRestError.class) })
-    @RequestMapping(value = "/orderTop", method = RequestMethod.DELETE, produces = { "application/json",
-            "application/xml" })
-    public ResponseEntity<OrderRepresentation> lookupTopOrder() {
+    @DeleteMapping(value = "/deleteTopOrder", produces = { "application/json" })
+    public ResponseEntity<OrderRepresentation> deleteTopOrder() {
 
         Order foundOrder = findTop(provider);
         OrderRepresentation orderRepresentation = transformer.transform(foundOrder);
@@ -114,11 +108,9 @@ public class OrderController {
             @ApiResponse(code = 401, message = "The authentication failed.", response = OrderRestError.class),
             @ApiResponse(code = 403, message = "The request could not be authorized.", response = OrderRestError.class),
             @ApiResponse(code = 404, message = "The Order  could not be found.", response = OrderRestError.class) })
-    @RequestMapping(value = "/{orderId}", method = RequestMethod.DELETE, produces = { "application/json",
-            "application/xml" })
-    public ResponseEntity<OrderRepresentation> lookupOrder(
-            @ApiParam(value = "The identifier of the existing Order") @PathVariable(
-                    "orderId") String orderIdParam) {
+    @DeleteMapping(value = "/deleteById/{orderId}")
+    public ResponseEntity<OrderRepresentation> deleteOrderById(
+            @ApiParam(value = "The identifier of the existing Order") @PathVariable("orderId") String orderIdParam) {
         Order key = new Order(new ClassifiedIdentifier(getid(orderIdParam)));
         Order foundOrder = find(provider, key);
         OrderRepresentation orderRepresentation = transformer.transform(foundOrder);
@@ -135,7 +127,7 @@ public class OrderController {
             @ApiResponse(code = 401, message = "The authentication failed.", response = OrderRestError.class),
             @ApiResponse(code = 403, message = "The request could not be authorized.",
                     response = OrderRestError.class), })
-    @RequestMapping(method = RequestMethod.GET, produces = { "application/json", "application/xml" })
+    @GetMapping(value = "/getAll", produces = { "application/json" })
     public ResponseEntity<List<OrderRepresentation>> findAllOrders() throws OrderException {
 
         List<Order> orders = findAll(provider);
@@ -154,8 +146,7 @@ public class OrderController {
             @ApiResponse(code = 400, message = "The request validation failed.", response = OrderRestError.class),
             @ApiResponse(code = 401, message = "The authentication failed.", response = OrderRestError.class),
             @ApiResponse(code = 403, message = "The request could not be authorized.", response = OrderRestError.class), })
-    @RequestMapping(value = "/avgwaittime", method = RequestMethod.GET, produces = { "application/json",
-            "application/xml" })
+    @GetMapping(value = "/avgwaittime",produces = { "application/json" })
     public ResponseEntity<OrderRepresentation> findAverageWaiting() throws OrderException {
         OrderRepresentation representation = transformer.transformValue(provider.averageWaitingTime());
         return new ResponseEntity<>(representation, HttpStatus.OK);
@@ -172,8 +163,7 @@ public class OrderController {
             @ApiResponse(code = 400, message = "The request validation failed.", response = OrderRestError.class),
             @ApiResponse(code = 401, message = "The authentication failed.", response = OrderRestError.class),
             @ApiResponse(code = 403, message = "The request could not be authorized.", response = OrderRestError.class) })
-    @RequestMapping(value = "/position/{orderId}", method = RequestMethod.GET, produces = { "application/json",
-            "application/xml" })
+    @GetMapping(value = "/position/{orderId}", produces = { "application/json"})
     public ResponseEntity<OrderRepresentation> findPosition(
             @ApiParam(value = "The identifier of the existing Order") @PathVariable(
                     "orderId") String orderIdParam) throws OrderException {
@@ -202,7 +192,7 @@ public class OrderController {
         return provider.findAll();
     }
 
-    static <O, R extends ResourceSupport> ResponseEntity<R> createOrUpdate(boolean doCreate, R representation,
+    static <O, R extends RepresentationModel> ResponseEntity<R> createOrUpdate(boolean doCreate, R representation,
             Transformer<O, R> transformer, LinkDecorator<R> decorator, BaseProvider<O> provider)
             throws OrderException {
 
@@ -210,18 +200,10 @@ public class OrderController {
         O result = provider.create(input);
         R resource = transformer.transform(result);
         R response = decorator.decorate(resource);
-        HttpHeaders httpHeaders = createHeadersWithLocation(representation);
         HttpStatus httpStatus = doCreate ? HttpStatus.CREATED : HttpStatus.OK;
-        return new ResponseEntity<R>(response, httpHeaders, httpStatus);
+        return new ResponseEntity<R>(response, httpStatus);
     }
 
-    static <R extends ResourceSupport> HttpHeaders createHeadersWithLocation(R representation) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        if (representation.getLink("self") != null) {
-            httpHeaders.add("Location", representation.getLink("self").getHref());
-        }
-        return httpHeaders;
-    }
 
     private Order find(BaseProvider<Order> provider, Order key) {
         return provider.find(key);
