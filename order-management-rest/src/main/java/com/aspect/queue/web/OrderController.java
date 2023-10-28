@@ -5,6 +5,7 @@ import com.aspect.queue.model.ClassifiedIdentifier;
 import com.aspect.queue.model.Order;
 import com.aspect.queue.model.errors.OrderRestError;
 import com.aspect.queue.model.exceptions.OrderException;
+import com.aspect.queue.model.exceptions.OrderInvalidValueException;
 import com.aspect.queue.model.provider.BaseProvider;
 import com.aspect.queue.model.transformers.OrderRepresentation;
 import com.aspect.queue.model.transformers.OrderRepresentationBuilder;
@@ -91,7 +92,7 @@ public class OrderController {
     @DeleteMapping(value = "/deleteTopOrder", produces = { "application/json" })
     public ResponseEntity<OrderRepresentation> deleteTopOrder() {
 
-        Order foundOrder = findTop(provider);
+        Order foundOrder = findTop();
         OrderRepresentation orderRepresentation = transformer.transform(foundOrder);
         return new ResponseEntity<>(orderRepresentation, HttpStatus.NO_CONTENT);
     }
@@ -112,7 +113,7 @@ public class OrderController {
     public ResponseEntity<OrderRepresentation> deleteOrderById(
             @ApiParam(value = "The identifier of the existing Order") @PathVariable("orderId") String orderIdParam) {
         Order key = new Order(new ClassifiedIdentifier(getid(orderIdParam)));
-        Order foundOrder = find(provider, key);
+        Order foundOrder = find(key);
         OrderRepresentation orderRepresentation = transformer.transform(foundOrder);
         orderRepresentation = decorator.decorate(orderRepresentation);
         return new ResponseEntity<>(orderRepresentation, HttpStatus.OK);
@@ -169,7 +170,8 @@ public class OrderController {
                     "orderId") String orderIdParam) throws OrderException {
 
         Optional<Order> order = checkOrder(orderIdParam);
-        OrderRepresentation representation = transformer.transformValue(provider.findPosition(order.get()));
+        OrderRepresentation representation = transformer.transformValue(provider.findPosition(order.orElseThrow( () ->
+                new OrderInvalidValueException("Order not present"))));
         return new ResponseEntity<>(representation, HttpStatus.OK);
     }
 
@@ -205,11 +207,11 @@ public class OrderController {
     }
 
 
-    private Order find(BaseProvider<Order> provider, Order key) {
+    private Order find(Order key) {
         return provider.find(key);
     }
 
-    private Order findTop(BaseProvider<Order> provider) {
+    private Order findTop() {
         return provider.findTop().get();
     }
 
