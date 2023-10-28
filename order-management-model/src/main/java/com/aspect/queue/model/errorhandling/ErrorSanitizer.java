@@ -1,6 +1,6 @@
 package com.aspect.queue.model.errorhandling;
 
-import com.aspect.queue.model.OrderRestError;
+import com.aspect.queue.model.errors.OrderRestError;
 import com.aspect.queue.model.exceptions.OrderException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;

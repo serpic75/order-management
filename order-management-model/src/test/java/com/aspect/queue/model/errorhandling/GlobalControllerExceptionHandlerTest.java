@@ -1,6 +1,6 @@
 package com.aspect.queue.model.errorhandling;
 
-import com.aspect.queue.model.OrderRestError;
+import com.aspect.queue.model.errors.OrderRestError;
 import com.aspect.queue.model.exceptions.OrderException;
 import com.aspect.queue.model.exceptions.OrderInvalidValueException;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class GlobalControllerExceptionHandlerTest {
         ResponseEntity<OrderRestError> actualError = handler.handleException(mockHttpRequest, orderException);
 
         // Then
-        assertEquals(actualError.getBody().getUri(), fixture.requestUrl);
+        assertEquals(actualError.getBody().getUrl(), fixture.requestUrl);
     }
 
     @Test

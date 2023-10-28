@@ -3,7 +3,7 @@ package com.aspect.queue.web;
 import com.aspect.queue.decorator.LinkDecorator;
 import com.aspect.queue.model.ClassifiedIdentifier;
 import com.aspect.queue.model.Order;
-import com.aspect.queue.model.OrderRestError;
+import com.aspect.queue.model.errors.OrderRestError;
 import com.aspect.queue.model.exceptions.OrderException;
 import com.aspect.queue.model.provider.BaseProvider;
 import com.aspect.queue.model.transformers.OrderRepresentation;

@@ -1,6 +1,6 @@
 package com.aspect.queue.model.errorhandling;
 
-import com.aspect.queue.model.OrderRestError;
+import com.aspect.queue.model.errors.OrderRestError;
 import com.aspect.queue.model.exceptions.OrderException;
 import com.aspect.queue.model.exceptions.OrderInvalidValueException;
 import org.springframework.beans.TypeMismatchException;
@@ -25,7 +25,7 @@ public class GlobalControllerExceptionHandler {
     ResponseEntity<OrderRestError> handleException(HttpServletRequest request, OrderException e) {
 
         OrderRestError restError = sanitizeRestError(new OrderRestError(e.getStatusCode(), e.getMessage(),
-                request.getRequestURL().toString()), request);
+                request.getRequestURL().toString(), e.getErrorText()), request);
 
         return new ResponseEntity<>(restError, HttpStatus.valueOf(e.getStatusCode()));
     }
@@ -44,7 +44,7 @@ public class GlobalControllerExceptionHandler {
         //On HttpMessageNotReadableException the important information is usually stored in the cause of the exception
         Throwable cause = e.getCause() != null ? e.getCause() : e;
         return sanitizeRestError(new OrderRestError(HttpStatus.BAD_REQUEST.value(), getSanitizedErrorMessage(cause),
-                request.getRequestURL().toString()), request);
+                request.getRequestURL().toString(), e.getMessage()), request);
     }
 
     @ExceptionHandler
