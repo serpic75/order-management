@@ -1,10 +1,7 @@
 package com.aspect.queue.config;
 
-import com.aspect.queue.model.Order;
 import com.aspect.queue.model.OrderComparator;
 import com.aspect.queue.model.UniquePriorityBlockingQueue;
-import com.aspect.queue.model.provider.BaseProvider;
-import com.aspect.queue.model.provider.OrderProvider;
 import com.aspect.queue.model.transformers.OrderRepresentation;
 import com.aspect.queue.web.validator.OrderValidator;
 import com.aspect.queue.web.validator.Validator;
@@ -17,11 +14,6 @@ public class StartUpConfig {
     @Bean
     public Validator<OrderRepresentation> orderRepresentationValidator(){
         return new OrderValidator();
-    }
-
-    @Bean
-    public BaseProvider<Order> orderProvider(){
-        return new OrderProvider();
     }
 
     @Bean

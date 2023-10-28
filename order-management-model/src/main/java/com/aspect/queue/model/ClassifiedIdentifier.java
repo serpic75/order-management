@@ -4,7 +4,6 @@ package com.aspect.queue.model;
 import com.aspect.queue.model.exceptions.NonClassifiedIdentifierException;
 import org.apache.commons.lang3.Range;
 
-import javax.annotation.CheckForNull;
 import java.util.Objects;
 
 import static com.aspect.queue.model.ClassifiedIdentifier.IdClass.MANAGMENTOVERRIDE;
@@ -18,10 +17,10 @@ public class ClassifiedIdentifier implements Comparable<ClassifiedIdentifier>{
         MANAGMENTOVERRIDE,
         VIP,
         PRIORITY,
-        NORMAL;
+        NORMAL
     }
 
-    private static final Range<Long> idRange =  Range.between(1l, 9223372036854775807l);
+    private static final Range<Long> idRange =  Range.between(1L, 9223372036854775807L);
 
     private final Long id;
     private IdClass idClass;
@@ -84,7 +83,6 @@ public class ClassifiedIdentifier implements Comparable<ClassifiedIdentifier>{
     }
 
     @Override
-    @CheckForNull
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

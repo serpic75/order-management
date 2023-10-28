@@ -2,7 +2,6 @@ package com.aspect.queue.domain.web;
 
 import com.aspect.queue.model.Order;
 import com.aspect.queue.decorator.LinkDecorator;
-import com.aspect.queue.model.OrderComparator;
 import com.aspect.queue.model.UniquePriorityBlockingQueue;
 import com.aspect.queue.model.exceptions.OrderException;
 import com.aspect.queue.model.provider.BaseProvider;
@@ -23,8 +22,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.PriorityBlockingQueue;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -99,7 +96,7 @@ public class OrderControlleTest extends BaseLinkDecoratorTestConfig {
         mocksInitialized( null);
 
         // When
-        ResponseEntity<OrderRepresentation> repr = target.lookupTopOrder();
+        ResponseEntity<OrderRepresentation> repr = target.deleteTopOrder();
         // Then
         assertThat(repr.getStatusCode(), is(HttpStatus.NO_CONTENT));
     }
@@ -110,7 +107,7 @@ public class OrderControlleTest extends BaseLinkDecoratorTestConfig {
         mocksInitialized( null);
 
         // When
-        ResponseEntity<OrderRepresentation> repr = target.lookupOrder(mockId);
+        ResponseEntity<OrderRepresentation> repr = target.deleteOrderById(mockId);
         // Then
         assertThat(repr.getStatusCode(), is(HttpStatus.OK));
     }

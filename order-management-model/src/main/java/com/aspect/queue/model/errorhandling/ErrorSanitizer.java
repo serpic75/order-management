@@ -6,10 +6,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.google.common.base.Strings;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.UnmarshalException;
+import java.rmi.UnmarshalException;
+import java.util.Objects;
 
 /**
  * Utility class providing methods to sanitize error messages
@@ -72,7 +72,7 @@ public class ErrorSanitizer {
         } else if (t instanceof OrderException) {
             // Order Exceptions use error text for some reason
             returnValue = ((OrderException) t).getErrorText();
-        } else if (!Strings.isNullOrEmpty(t.getLocalizedMessage())) {
+        } else if (!Objects.nonNull(t.getLocalizedMessage().isEmpty())) {
             returnValue = t.getLocalizedMessage();
         } else {
             returnValue = t.getMessage();
