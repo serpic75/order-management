@@ -88,6 +88,19 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
     </dependencies>
-
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <activatedProperties>local</activatedProperties>
+                <jdbcConnectionUrl>jdbc:sqlserver://SQL-SERVER-IP:1433;database=celtrak_valerio</jdbcConnectionUrl>
+                <jdbcUser>ENC(dQGsi6mBqDh6wnYmcCHHg9xmno0f23bXt1JszQcK4Yypv7uLgAD9kNzcwOzWcDI5)</jdbcUser>
+                <jdbcPassw>ENC(GumLEnnnccF1WdePpo309QjReYO5gjDLLY/+EsHFw11wrxdou31AXoNc16e+UjGE)</jdbcPassw>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
 
 </project>

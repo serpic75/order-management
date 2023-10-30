@@ -18,7 +18,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI springShopOpenAPI(@Value("${server.contextPath}") String contextPath) {
         return new OpenAPI()
-                .addServersItem(new Server().url(contextPath))
+                .addServersItem(new Server().url(""))
                 .info(new Info().title("CONNECTED SOLUTIONS REST API")
                         .description("REST API for interacting with Order Management App. ")
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")))

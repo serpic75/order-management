@@ -45,7 +45,7 @@ public class OrderController {
     public OrderController(
             @Qualifier("orderLinkDecorator") LinkDecorator<OrderRepresentation> decorator,
             @Qualifier("orderRepresentationValidator") Validator<OrderRepresentation> validator,
-            @Qualifier("orderProvider") BaseProvider<Order> provider,
+            @Qualifier("orderManagementService") BaseProvider<Order> provider,
             OrderTransformer transformer) {
         this.decorator = decorator;
         this.validator = validator;

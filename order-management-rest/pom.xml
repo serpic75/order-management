@@ -111,11 +111,21 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
             <version>2.12.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.2.0</version>
+        </dependency>
 
         <!-- Shared client components -->
         <dependency>
             <groupId>com.aspect.queue</groupId>
             <artifactId>order-management-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aspect.queue</groupId>
+            <artifactId>order-management-dao</artifactId>
             <version>${project.version}</version>
         </dependency>
 

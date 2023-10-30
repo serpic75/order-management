@@ -17,6 +17,7 @@
     <modules>
         <module>order-management-rest</module>
         <module>order-management-model</module>
+        <module>order-management-dao</module>
     </modules>
 
     <properties>
@@ -27,20 +28,32 @@
         <asciidoctor.maven.plugin.version>1.5.3</asciidoctor.maven.plugin.version>
         <asciidoctorj.version>1.5.4</asciidoctorj.version>
         <asciidoctorj.diagram.version>1.3.1</asciidoctorj.diagram.version>
-        <skip.documentation.build>true</skip.documentation.build>
-        <snippets.directory>${project.build.directory}/generated-snippets</snippets.directory>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.7</version>
+                    <artifactId>maven-assembly-plugin</artifactId>
                     <configuration>
-                        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                        <archive>
+                            <manifest>
+                                <mainClass>com.aspect.queue.Application</mainClass>
+                            </manifest>
+                        </archive>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -85,6 +98,11 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>3.0.4</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
