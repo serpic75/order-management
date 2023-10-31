@@ -1,9 +1,14 @@
 package com.aspect.queue.service;
 
+import com.aspect.queue.converters.ClassIdentifierConverter;
+import com.aspect.queue.converters.Converter;
+import com.aspect.queue.entity.ClassifiedIdentifierEntity;
 import com.aspect.queue.entity.OrderEntity;
+import com.aspect.queue.model.ClassifiedIdentifier;
 import com.aspect.queue.model.Order;
 import com.aspect.queue.model.exceptions.OrderInvalidValueException;
 import com.aspect.queue.model.provider.BaseProvider;
+import com.aspect.queue.repo.ClassifiedIdentifierRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -18,9 +23,16 @@ import java.util.stream.Collectors;
 public class OrderManagementService implements BaseProvider<Order> {
 	private static ModelMapper mapper = new ModelMapper();
 	private final OrderRepo repo;
+	private final ClassifiedIdentifierRepo classifiedIdentifierRepo;
+	private final Converter<ClassifiedIdentifier, ClassifiedIdentifierEntity> converter;
+	private final Converter<Order, OrderEntity> orderConverter;
 
-	public OrderManagementService(OrderRepo repo){
+	public OrderManagementService(OrderRepo repo, ClassifiedIdentifierRepo classifiedIdentifierRepo,
+			ClassIdentifierConverter converter, Converter<Order, OrderEntity> orderConverter){
 		this.repo = repo;
+		this.classifiedIdentifierRepo = classifiedIdentifierRepo;
+		this.converter = converter;
+		this.orderConverter = orderConverter;
 	}
 
 	public Order findById(Long id){
@@ -33,7 +45,7 @@ public class OrderManagementService implements BaseProvider<Order> {
 	}
 
 	@Override public List<Order> findAll() {
-		return repo.findAll().stream().map(a -> mapper.map(a, Order.class)).collect(Collectors.toList());
+		return repo.findAll().stream().map(a -> orderConverter.convertFromEntity(a)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -43,8 +55,12 @@ public class OrderManagementService implements BaseProvider<Order> {
 
 	@Override
 	public Order create(Order order) {
-		OrderEntity orderSaved = repo.save(mapper.map(order, OrderEntity.class));
-		return mapper.map(orderSaved, Order.class);
+		ClassifiedIdentifierEntity classifiedIdentifierEntity =
+				classifiedIdentifierRepo.save(converter.convertFromBean(order.getId()));
+		OrderEntity orderEntity = mapper.map(order, OrderEntity.class);
+		orderEntity.setId(classifiedIdentifierEntity.getId());
+		OrderEntity orderSaved = repo.save(orderEntity);
+		return orderConverter.convertFromEntity(orderSaved);
 	}
 
 	@Override public Optional<Order> findTop() {

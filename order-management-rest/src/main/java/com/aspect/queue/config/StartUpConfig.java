@@ -6,9 +6,11 @@ import com.aspect.queue.model.transformers.OrderRepresentation;
 import com.aspect.queue.web.validator.OrderValidator;
 import com.aspect.queue.web.validator.Validator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ComponentScan({ "com.aspect.queue" })
 public class StartUpConfig {
 
     @Bean

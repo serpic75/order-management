@@ -46,14 +46,13 @@ public class OrderRepresentationBuilder {
     }
 
     public OrderRepresentation createRepresentation() {
-        OrderRepresentation representation = new OrderRepresentation(id, timestamp, priority, seconds, orderPosition, averageWaitTime);
-
+        OrderRepresentation representation =
+                new OrderRepresentation(id, timestamp, priority, seconds, orderPosition, averageWaitTime);
         return representation;
     }
 
     public Order create() {
         Order order = new Order(new ClassifiedIdentifier(id), timestamp);
-
         return order;
     }
 
